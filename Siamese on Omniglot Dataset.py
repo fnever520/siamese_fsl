@@ -37,17 +37,10 @@ from sklearn.utils import shuffle
 import numpy.random as rng
 
 
-# ### Please give below paths as per the paths in your system
-
-# In[2]:
-
-
 train_folder = "Omniglot\\images_background\\"
 val_folder = 'Omniglot\\images_evaluation\\'
 save_path = 'data\\'
 
-
-# In[3]:
 
 
 def loadimgs(path,n = 0):
@@ -87,49 +80,15 @@ def loadimgs(path,n = 0):
     X = np.stack(X)
     return X,y,lang_dict
 
-
-# ### Loading the train images into tensors
-
-# In[7]:
-
-
+'''
 X,y,c=loadimgs(train_folder)
-
-
-# ### Saving the train tensors on disk
-
-# In[10]:
-
-
 with open(os.path.join(save_path,"train.pickle"), "wb") as f:
     pickle.dump((X,c),f)
 
-
-# ### Loading the validation images into tensors
-
-# In[15]:
-
-
 Xval,yval,cval=loadimgs(val_folder)
-
-
-# ### Saving the validation tensors on disk
-
-# In[16]:
-
-
 with open(os.path.join(save_path,"val.pickle"), "wb") as f:
     pickle.dump((Xval,cval),f)
-
-
-# In[13]:
-
-
-# del X, y ,c ,Xval, yval, cval
-
-
-# In[4]:
-
+'''
 
 def initialize_weights(shape, name=None):
     """
@@ -139,8 +98,6 @@ def initialize_weights(shape, name=None):
     return np.random.normal(loc = 0.0, scale = 1e-2, size = shape)
 
 
-# In[5]:
-
 
 def initialize_bias(shape, name=None):
     """
@@ -148,10 +105,6 @@ def initialize_bias(shape, name=None):
         suggests to initialize CNN layer bias with mean as 0.5 and standard deviation of 0.01
     """
     return np.random.normal(loc = 0.5, scale = 1e-2, size = shape)
-
-
-# In[6]:
-
 
 def get_siamese_model(input_shape):
     """
@@ -199,16 +152,10 @@ def get_siamese_model(input_shape):
     return siamese_net
 
 
-# In[7]:
-
-
 model = get_siamese_model((105, 105, 1))
 model.summary()
 
 
-# In[25]:
-
-# In[9]:
 
 def custom_loss(y_true,y_pred):
     margin= 0.2
@@ -230,17 +177,12 @@ print("Training alphabets: \n")
 print(list(train_classes.keys()))
 
 
-# In[9]:
-
 
 with open(os.path.join(save_path, "val.pickle"), "rb") as f:
     (Xval, val_classes) = pickle.load(f)
 
 print("Validation alphabets:", end="\n\n")
 print(list(val_classes.keys()))
-
-
-# In[10]:
 
 
 def get_batch(batch_size,s="train"):
@@ -282,8 +224,6 @@ def get_batch(batch_size,s="train"):
     return pairs, targets
 
 
-# In[11]:
-
 
 def generate(batch_size, s="train"):
     """a generator for batches, so model.fit_generator can be used. """
@@ -291,8 +231,6 @@ def generate(batch_size, s="train"):
         pairs, targets = get_batch(batch_size,s)
         yield (pairs, targets)
 
-
-# In[79]:
 
 
 def make_oneshot_task(N, s="val", language=None):
@@ -328,9 +266,6 @@ def make_oneshot_task(N, s="val", language=None):
     return pairs, targets
 
 
-# In[13]:
-
-
 def test_oneshot(model, N, k, s = "val", verbose = 0):
     """Test average N way oneshot learning accuracy of a siamese neural net over k one-shot tasks"""
     n_correct = 0
@@ -345,15 +280,6 @@ def test_oneshot(model, N, k, s = "val", verbose = 0):
     if verbose:
         print("Got an average of {}% {} way one-shot learning accuracy \n".format(percent_correct,N))
     return percent_correct
-
-
-# In[ ]:
-
-
-
-
-
-# In[14]:
 
 
 # Hyper parameters
@@ -371,8 +297,6 @@ best = -1
 model_path = './weights/'
 
 
-# In[47]:
-
 
 print("Starting training process!")
 print("-------------------------------------")
@@ -389,10 +313,6 @@ for i in range(1, n_iter+1):
         if val_acc >= best:
             print("Current best: {0}, previous best: {1}".format(val_acc, best))
             best = val_acc
-
-
-# In[ ]:
-
 
 
 
