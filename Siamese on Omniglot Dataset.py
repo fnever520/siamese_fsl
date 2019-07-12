@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 import cv2
 import time
-
+import datetime
 import tensorflow as tf
 from keras.models import Sequential
 from keras.optimizers import Adam
@@ -158,8 +158,15 @@ model.summary()
 
 
 def custom_loss(y_true,y_pred):
-    margin= 0.2
-    return K.mean(y_true*(1-y_pred) + (1-y_true)*K.maximum(y_pred-margin, 0))
+    # margin = 1
+    # return K.mean(y_true * K.square(y_pred) + (1 - y_true) * K.square(K.maximum(margin - y_pred, 0)))
+    
+    #exp
+    margin = 1
+    return K.mean((1-y_true) * K.square(y_pred) + (y_true) * K.square(K.maximum(margin - y_pred, 0)))
+
+    # margin= 0.2
+    # return K.mean(y_true*(1-y_pred) + (1-y_true)*K.maximum(y_pred-margin, 0))
 
 optimizer = Adam(lr = 0.00006)
 #model.compile(loss="binary_crossentropy",optimizer=optimizer)
@@ -439,8 +446,8 @@ def plot_oneshot_task(pairs):
 
 
 # Example of concat image visualization
-pairs, targets = make_oneshot_task(16,"train","Sanskrit")
-plot_oneshot_task(pairs)
+# pairs, targets = make_oneshot_task(16,"train","Korean")
+# plot_oneshot_task(pairs)
 
 
 # ### Resuts
@@ -461,6 +468,8 @@ box = ax.get_position()
 ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 inputs,targets = make_oneshot_task(20, "val", 'Oriya')
+now = datetime.datetime.now()
+plt.savefig("result_custom_loss_{}way_{}shot_{}".format(N_way, n_val, now.strftime("%H%M%S") ), dpi= 200)
 plt.show()
 
 plot_oneshot_task(inputs)
