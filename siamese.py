@@ -106,6 +106,17 @@ def initialize_bias(shape, name=None):
     """
     return np.random.normal(loc = 0.5, scale = 1e-2, size = shape)
 
+
+def euclidean_distance(vects):
+    x, y = vects
+    sum_square = K.sum(K.square(x - y), axis=1, keepdims=True)
+    return K.sqrt(K.maximum(sum_square, K.epsilon()))
+
+
+def eucl_dist_output_shape(shapes):
+    shape1, shape2 = shapes
+    return (shape1[0], 1)
+
 def get_siamese_model(input_shape):
     """
         Model architecture based on the one provided in: http://www.cs.utoronto.ca/~gkoch/files/msc-thesis.pdf
@@ -137,12 +148,15 @@ def get_siamese_model(input_shape):
     # Generate the encodings (feature vectors) for the two images
     encoded_l = model(left_input)
     encoded_r = model(right_input)
-    
+    '''
     # Add a customized layer to compute the absolute difference between the encodings
-    L1_layer = Lambda(lambda tensors:K.abs(tensors[0] - tensors[1]))
-    L1_distance = L1_layer([encoded_l, encoded_r])
+    L1_distance = Lambda(lambda tensors:K.abs(tensors[0] - tensors[1]))([encoded_l, encoded_r])
     
     # Add a dense layer with a sigmoid unit to generate the similarity score
+    prediction = Dense(1,activation='sigmoid',bias_initializer=initialize_bias)(L1_distance)
+    '''
+    L1_distance = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([encoded_l, encoded_r])
+
     prediction = Dense(1,activation='sigmoid',bias_initializer=initialize_bias)(L1_distance)
     
     # Connect the inputs with the outputs
