@@ -35,7 +35,7 @@ from keras import backend as K
 from sklearn.utils import shuffle
 
 import numpy.random as rng
-
+from sklearn.metrics.pairwise import cosine_similarity
 
 train_folder = "Omniglot\\images_background\\"
 val_folder = 'Omniglot\\images_evaluation\\'
@@ -116,6 +116,10 @@ def euclidean_distance(vects):
 def eucl_dist_output_shape(shapes):
     shape1, shape2 = shapes
     return (shape1[0], 1)
+
+def cos_similarity(vects):
+    x, y = vects
+    return np.sum(x*y, axis = 1)/(np.sqrt(np.sum(x**2, axis=1))*(np.sqrt(np.sum(y**2, axis=1))))
 
 def get_siamese_model(input_shape):
     """
